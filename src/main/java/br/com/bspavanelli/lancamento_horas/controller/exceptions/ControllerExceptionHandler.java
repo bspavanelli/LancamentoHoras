@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import br.com.bspavanelli.lancamento_horas.services.exceptions.DataIntegrityException;
 import br.com.bspavanelli.lancamento_horas.services.exceptions.InvalidDateException;
+import br.com.bspavanelli.lancamento_horas.services.exceptions.LancamentoExistsException;
 import br.com.bspavanelli.lancamento_horas.services.exceptions.ObjectNotFoundException;
+import br.com.bspavanelli.lancamento_horas.services.exceptions.StartTimeGreaterThanEndTimeException;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
@@ -22,7 +24,8 @@ public class ControllerExceptionHandler {
 
 		StandardError err = new StandardError(HttpStatus.NOT_FOUND.value(), e.getMessage(), System.currentTimeMillis());
 
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+			.body(err);
 	}
 
 	@ExceptionHandler(DataIntegrityException.class)
@@ -31,36 +34,64 @@ public class ControllerExceptionHandler {
 		StandardError err = new StandardError(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
 				System.currentTimeMillis());
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(err);
 	}
-	
+
 	@ExceptionHandler(InvalidDateException.class)
 	public ResponseEntity<StandardError> invalidDate(InvalidDateException e, HttpServletRequest request) {
-		
+
 		StandardError err = new StandardError(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
 				System.currentTimeMillis());
-		
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(err);
 	}
-	
+
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public ResponseEntity<StandardError> httpMessageNotReadable(HttpMessageNotReadableException e, HttpServletRequest request) {
-		
+	public ResponseEntity<StandardError> httpMessageNotReadable(HttpMessageNotReadableException e,
+			HttpServletRequest request) {
+
 		StandardError err = new StandardError(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
 				System.currentTimeMillis());
-		
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(err);
 	}
-	
+
+	@ExceptionHandler(LancamentoExistsException.class)
+	public ResponseEntity<StandardError> lancamentoExists(LancamentoExistsException e, HttpServletRequest request) {
+
+		StandardError err = new StandardError(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
+				System.currentTimeMillis());
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(err);
+	}
+
+	@ExceptionHandler(StartTimeGreaterThanEndTimeException.class)
+	public ResponseEntity<StandardError> lancamentoExists(StartTimeGreaterThanEndTimeException e,
+			HttpServletRequest request) {
+
+		StandardError err = new StandardError(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
+				System.currentTimeMillis());
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(err);
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<StandardError> methodArgumentNotValid(MethodArgumentNotValidException e, HttpServletRequest request) {
+	public ResponseEntity<StandardError> methodArgumentNotValid(MethodArgumentNotValidException e,
+			HttpServletRequest request) {
 
 		ValidationError err = new ValidationError(HttpStatus.BAD_REQUEST.value(), "Erro de validação",
 				System.currentTimeMillis());
-		for (FieldError x : e.getBindingResult().getFieldErrors()) {
+		for (FieldError x : e.getBindingResult()
+			.getFieldErrors()) {
 			err.addError(x.getField(), x.getDefaultMessage());
 		}
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(err);
 	}
 }

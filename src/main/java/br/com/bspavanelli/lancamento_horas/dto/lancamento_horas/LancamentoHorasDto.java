@@ -1,23 +1,19 @@
-package br.com.bspavanelli.lancamento_horas.entities;
+package br.com.bspavanelli.lancamento_horas.dto.lancamento_horas;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 
-@Entity
-public class LancamentoHoras {
+import br.com.bspavanelli.lancamento_horas.dto.usuario.UsuarioDto;
+import br.com.bspavanelli.lancamento_horas.entities.Usuario;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+public class LancamentoHorasDto {
+
 	private Long id;
 
 	@NotNull(message = "Campo data não pode ser nulo")
@@ -30,20 +26,9 @@ public class LancamentoHoras {
 
 	private LocalTime ajusteHora = LocalTime.of(0, 0);
 
-	@ManyToOne
-	private Usuario usuario;
+	private UsuarioDto usuario;
 
-	public LancamentoHoras() {
-	}
-
-	public LancamentoHoras(Long id, @NotNull(message = "Campo data não pode ser nulo") Calendar dataLancamento,
-			LocalTime horaEntrada, LocalTime horaSaida, LocalTime ajusteHora, Usuario usuario) {
-		this.id = id;
-		this.dataLancamento = dataLancamento;
-		this.horaEntrada = horaEntrada;
-		this.horaSaida = horaSaida;
-		this.ajusteHora = ajusteHora;
-		this.usuario = usuario;
+	public LancamentoHorasDto() {
 	}
 
 	public Long getId() {
@@ -86,11 +71,18 @@ public class LancamentoHoras {
 		this.ajusteHora = ajusteHora;
 	}
 
-	public Usuario getUsuario() {
+	public UsuarioDto getUsuario() {
 		return usuario;
 	}
 
 	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
+		this.usuario = new UsuarioDto(usuario);
+	}
+
+	public LocalTime getTotalHoras() {
+		long duracaoPeriodo = ChronoUnit.MINUTES.between(horaEntrada, horaSaida);
+
+		return LocalTime.of(ajusteHora.getHour(), ajusteHora.getMinute())
+			.plusMinutes(duracaoPeriodo);
 	}
 }
